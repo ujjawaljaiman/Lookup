@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacking and Lookup Tools</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #333;
+            padding: 1rem;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 20px;
+        }
+        .navbar a:hover {
+            background-color: #575757;
+            border-radius: 5px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 2rem;
+        }
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            background-color: #333;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #333;
+            color: white;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="ip.php">IP Lookup</a>
+        <a href="dns.php">DNS Lookup</a>
+        <a href="tempmail.php">TempMail Lookup</a>
+        <a href="whois.php">Whois Lookup</a>
+    </nav>
+    
+    <div class="header">
+        <h1>Hacking and Lookup Tools</h1>
+    </div>
+    
+    <div class="container">
+        <div id="ip-lookup" class="content">
+            <h2>IP Lookup</h2>
+            <p>Perform IP lookup to get details about any IP address.</p>
+            <!-- Add your IP lookup form and results here -->
+        </div>
+
+        <div id="dns-lookup" class="content">
+            <h2>DNS Lookup</h2>
+            <p>Perform DNS lookup to get DNS records for a domain.</p>
+            <!-- Add your DNS lookup form and results here -->
+        </div>
+
+        <div id="tempmail-lookup" class="content">
+            <h2>TempMail Lookup</h2>
+            <p>Generate and manage temporary email addresses.</p>
+            <!-- Add your TempMail lookup form and results here -->
+        </div>
+
+        <div id="whois-lookup" class="content">
+            <h2>WHOIS Lookup</h2>
+            <p>Perform WHOIS lookup to get registration details of a domain.</p>
+            <!-- Add your WHOIS lookup form and results here -->
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 Hacking and Lookup Tools. All rights reserved.
+    </footer>
+</body>
+</html>
