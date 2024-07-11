@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WHOIS Information</title>
+    <title>TempMail Lookup</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -69,102 +69,92 @@
         <a href="tempmail.php">TempMail Lookup</a>
         <a href="whois.php">Whois Lookup</a>
     </nav>
-
+    
     <div class="header">
         <h1>Hacking and Lookup Tools</h1>
     </div>
-
+    
     <div class="container">
-        <div id="whois-lookup" class="content">
-            <h2>WHOIS Information</h2>
-            <form class="mb-4" method="GET">
+        <div id="tempmail-lookup" class="content">
+            <h2>TempMail Lookup</h2>
+            <form class="mb-4" method="GET" action="">
                 <div class="input-group">
-                    <input type="text" class="form-control" name="domain" placeholder="Enter domain name" required>
+                    <input type="text" class="form-control" name="domain" placeholder="Enter domain" required>
                     <div class="input-group-append">
                         <button class="btn btn-primary" type="submit">Search</button>
                     </div>
                 </div>
             </form>
+
             <?php
             if (isset($_GET['domain'])) {
-                $apiKey = "bqwhB6JrNxfyfK2qza5ESaNRojl8pZjj";
                 $domain = htmlspecialchars($_GET['domain'], ENT_QUOTES, 'UTF-8');
+                $apiUrl = "https://mailcheck.p.rapidapi.com/?domain={$domain}";
+                $apiHost = 'mailcheck.p.rapidapi.com';
+                $apiKey = '3202e091aamsh7dbea6603002e6ep1d4787jsn9b4d7e760111';
 
-                $curl = curl_init();
-
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => "https://api.apilayer.com/whois/query?domain=$domain",
-                    CURLOPT_HTTPHEADER => array(
-                        "apikey: $apiKey"
-                    ),
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => "",
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 30,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => "GET",
-                ));
+                $curl = curl_init($apiUrl);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_HTTPGET, true);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, [
+                    "x-rapidapi-host: $apiHost",
+                    "x-rapidapi-key: $apiKey"
+                ]);
 
                 $response = curl_exec($curl);
-                $err = curl_error($curl);
+                $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                if ($response === false) {
+                    echo '<div class="alert alert-danger">Curl error: ' . curl_error($curl) . '</div>';
+                    curl_close($curl);
+                    exit;
+                }
 
                 curl_close($curl);
 
-                if ($err) {
-                    echo "<div class='alert alert-danger'>cURL Error #: $err</div>";
-                } else {
-                    $result = json_decode($response, true);
-                    if (isset($result['result'])) {
-                        $whoisData = $result['result'];
-                        ?>
-                        <table class="table table-striped table-bordered">
-                            <tbody>
-                            <tr>
-                                <th scope="row">Domain Name</th>
-                                <td><?php echo $whoisData['domain_name']; ?></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Registrar</th>
-                                <td><?php echo $whoisData['registrar']; ?></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Creation Date</th>
-                                <td><?php echo $whoisData['creation_date']; ?></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Expiration Date</th>
-                                <td><?php echo $whoisData['expiration_date']; ?></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Updated Date</th>
-                                <td><?php echo $whoisData['updated_date']; ?></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Status</th>
-                                <td><?php echo is_array($whoisData['status']) ? implode(", ", $whoisData['status']) : $whoisData['status']; ?></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Name Servers</th>
-                                <td><?php echo implode(", ", $whoisData['name_servers']); ?></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Organization</th>
-                                <td><?php echo isset($whoisData['organization']) ? $whoisData['organization'] : 'N/A'; ?></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Country</th>
-                                <td><?php echo isset($whoisData['country']) ? $whoisData['country'] : 'N/A'; ?></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">State</th>
-                                <td><?php echo isset($whoisData['state']) ? $whoisData['state'] : 'N/A'; ?></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <?php
-                    } else {
-                        echo "<div class='alert alert-warning'>No result found.</div>";
+                if ($httpCode != 200) {
+                    echo '<div class="alert alert-danger">Error: Received HTTP status code ' . $httpCode . '.</div>';
+                    echo "<pre>Raw response: " . htmlspecialchars($response, ENT_QUOTES, 'UTF-8') . "</pre>";
+                    exit;
+                }
+
+                $data = json_decode($response, true);
+
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    echo '<div class="alert alert-danger">JSON decode error: ' . json_last_error_msg() . '</div>';
+                    echo "<pre>Raw response: " . htmlspecialchars($response, ENT_QUOTES, 'UTF-8') . "</pre>";
+                    exit;
+                }
+
+                array_walk_recursive($data, function (&$item) {
+                    if ($item === true) {
+                        $item = 'Yes';
+                    } elseif ($item === false) {
+                        $item = 'No';
                     }
+                });
+
+                if (isset($data) && is_array($data)) {
+                    echo "<h2 class='mt-4'>Mailcheck Information for '{$domain}'</h2>";
+                    echo "<table class='table table-striped table-bordered'>";
+                    echo "<tr><th>Key</th><th>Value</th></tr>";
+                    displayDataInTable($data);
+                    echo "</table>";
+                } else {
+                    echo '<div class="alert alert-warning">No Mailcheck information found for ' . htmlspecialchars($domain, ENT_QUOTES, 'UTF-8') . '.</div>';
+                }
+            }
+
+            function displayDataInTable($data) {
+                foreach ($data as $key => $value) {
+                    echo '<tr>';
+                    echo '<td>' . htmlspecialchars($key, ENT_QUOTES, 'UTF-8') . '</td>';
+                    if (is_array($value) || is_object($value)) {
+                        echo '<td><pre>' . htmlspecialchars(json_encode($value, JSON_PRETTY_PRINT), ENT_QUOTES, 'UTF-8') . '</pre></td>';
+                    } else {
+                        echo '<td>' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '</td>';
+                    }
+                    echo '</tr>';
                 }
             }
             ?>
